@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 class Ship {
 
-    protected static int size = 128;
-    protected static int halfSize = size/2;
+    protected static int size = 128 * 2 / 3;
+    protected static int halfSize = size / 2;
     protected static Vector3 touchPosition = new Vector3();
 
 }
