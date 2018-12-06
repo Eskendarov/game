@@ -9,8 +9,8 @@ public class DesktopLauncher {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.title = "Star Wars";
 //		config.useGL20 = false;
-		config.width = 320;
-		config.height = 480;
+		config.width = 360;
+		config.height = 640;
 		new LwjglApplication(new StarWars(), config);
 	}
 }
