@@ -1,11 +1,16 @@
 package ru.eskendarov;
 
-import lombok.Data;
+import com.badlogic.gdx.math.Rectangle;
 
-@Data
-class Ship {
+import lombok.Getter;
 
-    private int size = 128 * 2 / 3;
-    private int halfSize = size / 2;
+@Getter
+abstract class Ship {
+
+    private final Rectangle rectangle = new Rectangle();
+    private final int size = 128 * 2 / 3;
+    private final int halfSize = size / 2;
+
+    abstract void initPosition();
 
 }
