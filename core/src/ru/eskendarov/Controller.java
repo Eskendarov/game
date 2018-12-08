@@ -4,10 +4,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.utils.TimeUtils;
 
-import java.util.Iterator;
+import lombok.Getter;
 
+@Getter
 class Controller {
 
     private final SpriteBatch spriteBatch = new SpriteBatch();
@@ -16,6 +16,7 @@ class Controller {
     private final EnemyShip enemyShip = new EnemyShip();
     private final Stars stars = new Stars();
     private boolean right;
+    private int currentSizeShip;
 
     Controller() {
         System.out.println("controller create");
@@ -23,76 +24,17 @@ class Controller {
         enemyShip.initPosition();
     }
 
-    void work() {
+    void film() {
         Screen.camera.update();
         spriteBatch.setProjectionMatrix(Screen.camera.combined);
         spriteBatch.begin();
         spriteBatch.draw(resources.getBackgroundImage(), 0, 0, Screen.WIDTH, Screen.HEIGHT);
         spriteBatch.end();
-        int currentSizeShip;
-        if (Gdx.input.isTouched()) {
-
-
-            if (Gdx.input.isTouched() && Screen.touchPosition.x < Screen.HALF_WIDTH) {
-                ownShip.getRectangle().x -= 500 * Gdx.graphics.getDeltaTime();
-            }
-            if (Gdx.input.isTouched() && Screen.touchPosition.x > Screen.HALF_WIDTH) {
-                ownShip.getRectangle().x += 500 * Gdx.graphics.getDeltaTime();
-            }
-
-
-
-            Screen.touchPosition.set(Gdx.input.getX(), Gdx.input.getY(), 0);
-            Screen.camera.unproject(Screen.touchPosition);
-//            ownShip.getRectangle().x = Screen.touchPosition.x - ownShip.getHalfSize();
-            resources.getBlasterSound().play();
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-            resources.getBlasterSound().play();
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            ownShip.getRectangle().y = ownShip.getRectangle().y + 5;
-            currentSizeShip = ownShip.getSize() - 2;
-        } else {
-            currentSizeShip = ownShip.getSize();
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            ownShip.getRectangle().y = ownShip.getRectangle().y - 5;
-            currentSizeShip = ownShip.getSize() + 2;
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            ownShip.getRectangle().x -= 500 * Gdx.graphics.getDeltaTime();
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            ownShip.getRectangle().x += 500 * Gdx.graphics.getDeltaTime();
-        }
-        if (ownShip.getRectangle().x < -ownShip.getHalfSize()) {
-            ownShip.getRectangle().x = -ownShip.getHalfSize();
-        }
-        if (ownShip.getRectangle().x > Screen.WIDTH - ownShip.getHalfSize()) {
-            ownShip.getRectangle().x = Screen.WIDTH - ownShip.getHalfSize();
-        }
-        if (ownShip.getRectangle().y < ownShip.getHalfSize() / 3) {
-            ownShip.getRectangle().y = ownShip.getHalfSize() / 3;
-        }
-        if (ownShip.getRectangle().y > Screen.HEIGHT - ownShip.getSize()) {
-            ownShip.getRectangle().y = Screen.HEIGHT - ownShip.getSize();
-        }
-        final Iterator<Rectangle> iterator = stars.getStars().iterator();
-        while (iterator.hasNext()) {
-            final Rectangle stars = iterator.next();
-            stars.y -= 110 * Gdx.graphics.getDeltaTime();
-            if (stars.y < 0) iterator.remove();
-        }
+        touchController();
+        keyController();
+        stars.iterate();
         if (enemyShip.getRectangle().overlaps(ownShip.getRectangle())) { // Столкновение //todo overlaps
-            resources.getBlasterSound().play();
-        }
-        /*
-         * проверяем, сколько времени прошло, с тех пор как была создана
-         * новая звезда и если необходимо, создаем еще одну новую звезду.
-         * */
-        if (TimeUtils.nanoTime() - stars.getLastStarTime() > 10000000) {
-            stars.starFall();
+            // do something
         }
         spriteBatch.begin();
         for (final Rectangle starsRec : stars.getStars()) {
@@ -124,6 +66,55 @@ class Controller {
         spriteBatch.draw(resources.getEnemyShipImage(), enemyShip.getRectangle().x, enemyShip.getRectangle().y, enemyShip.getSize(), enemyShip.getSize());
         spriteBatch.draw(resources.getOwnShipImage(), ownShip.getRectangle().x, ownShip.getRectangle().y, currentSizeShip, currentSizeShip);
         spriteBatch.end();
+    }
+
+    private void touchController() {
+        if (Gdx.input.isTouched()) {
+            if (Gdx.input.isTouched() && Screen.touchPosition.x < Screen.HALF_WIDTH) {
+                ownShip.getRectangle().x -= 500 * Gdx.graphics.getDeltaTime();
+                Screen.touchPosition.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+            }
+            if (Gdx.input.isTouched() && Screen.touchPosition.x > Screen.HALF_WIDTH) {
+                ownShip.getRectangle().x += 500 * Gdx.graphics.getDeltaTime();
+                Screen.touchPosition.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+            }
+            Screen.camera.unproject(Screen.touchPosition);
+            resources.getBlasterSound().play(0.03f);
+        }
+    }
+
+    private void keyController() {
+        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+            resources.getBlasterSound().play(.03f);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+            ownShip.getRectangle().y = ownShip.getRectangle().y + 5;
+            currentSizeShip = ownShip.getSize() - 2;
+        } else {
+            currentSizeShip = ownShip.getSize();
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+            ownShip.getRectangle().y = ownShip.getRectangle().y - 5;
+            currentSizeShip = ownShip.getSize() + 2;
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            ownShip.getRectangle().x -= 500 * Gdx.graphics.getDeltaTime();
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            ownShip.getRectangle().x += 500 * Gdx.graphics.getDeltaTime();
+        }
+        if (ownShip.getRectangle().x < -ownShip.getHalfSize()) {
+            ownShip.getRectangle().x = -ownShip.getHalfSize();
+        }
+        if (ownShip.getRectangle().x > Screen.WIDTH - ownShip.getHalfSize()) {
+            ownShip.getRectangle().x = Screen.WIDTH - ownShip.getHalfSize();
+        }
+        if (ownShip.getRectangle().y < ownShip.getHalfSize() / 3) {
+            ownShip.getRectangle().y = ownShip.getHalfSize() / 3;
+        }
+        if (ownShip.getRectangle().y >= enemyShip.getRectangle().y - ownShip.getSize()) {
+            ownShip.getRectangle().y = enemyShip.getRectangle().y - ownShip.getSize();
+        }
     }
 
 }

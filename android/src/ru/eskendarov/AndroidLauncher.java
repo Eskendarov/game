@@ -15,4 +15,5 @@ public class AndroidLauncher extends AndroidApplication {
         config.useCompass = false;
         initialize(new StarWars(), config);
     }
+
 }

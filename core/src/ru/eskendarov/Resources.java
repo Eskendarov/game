@@ -14,14 +14,14 @@ class Resources {
     private Texture enemyShipImage = new Texture(Gdx.files.internal("textures/raptor.png"));
     private Texture starImage = new Texture(Gdx.files.internal("textures/star.png"));
     private Texture backgroundImage = new Texture(Gdx.files.internal("textures/space.jpg"));
-    private Music backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/backMus.mp3"));
+    private Music backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/Ship_Loop.wav"));
     private Sound newGameSound = Gdx.audio.newSound(Gdx.files.internal("sounds/new_game.wav"));
     private Sound blasterSound = Gdx.audio.newSound(Gdx.files.internal("sounds/blaster3.wav"));
 
-    void initSounds() {
+    void initSound() {
         backgroundMusic.setLooping(true);
+        backgroundMusic.setVolume(2f);
         backgroundMusic.play();
-        blasterSound.setVolume(1,1.5f);
         System.out.println("init sounds");
     }
 

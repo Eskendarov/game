@@ -16,7 +16,7 @@ public class StarWars extends ApplicationAdapter {
     public void create() {
         new Screen(false);
         resources = new Resources();
-        resources.initSounds();
+        resources.initSound();
         controller = new Controller();
     }
 
@@ -27,9 +27,9 @@ public class StarWars extends ApplicationAdapter {
      * */
     @Override
     public void render() {
-        Gdx.gl.glClearColor(0, 0, 0.2f, 1); // Позиции объектов.
+        Gdx.gl.glClearColor(0, 0, 0.2f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // Очищает экран.
-        controller.work();
+        controller.film();
     }
 
     /*
