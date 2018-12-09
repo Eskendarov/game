@@ -1,10 +1,10 @@
 package ru.eskendarov;
 
-import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 
-public class StarWars extends ApplicationAdapter {
+public class StarWars extends Game {
 
     private Resources resources;
     private Controller controller;
@@ -39,7 +39,7 @@ public class StarWars extends ApplicationAdapter {
      * */
     @Override
     public void resize(int width, int height) {
-        super.resize(width, height);
+        //        super.resize(width, height);
     }
 
     /*

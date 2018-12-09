@@ -8,9 +8,9 @@ import lombok.Getter;
 @Getter
 public class Screen {
 
-    public final static int WIDTH = 360;
+    public final static int WIDTH = 540;
     public final static int HALF_WIDTH = WIDTH / 2;
-    public final static int HEIGHT = 720;
+    public final static int HEIGHT = 960;
     public final static OrthographicCamera camera = new OrthographicCamera();
     public final static Vector3 touchPosition = new Vector3();
 

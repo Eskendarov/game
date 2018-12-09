@@ -17,18 +17,20 @@ class Resources {
     private Music backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/Ship_Loop.wav"));
     private Sound newGameSound = Gdx.audio.newSound(Gdx.files.internal("sounds/new_game.wav"));
     private Sound blasterSound = Gdx.audio.newSound(Gdx.files.internal("sounds/blaster3.wav"));
+    private Sound enemyDetectSound = Gdx.audio.newSound(Gdx.files.internal("sounds/enemy-detected.wav"));
 
     void initSound() {
         backgroundMusic.setLooping(true);
         backgroundMusic.setVolume(2f);
         backgroundMusic.play();
-        System.out.println("init sounds");
+        System.out.println("init background sounds");
     }
 
     void dispose() {
         backgroundImage.dispose();
         backgroundMusic.dispose();
         blasterSound.dispose();
+        enemyDetectSound.dispose();
         ownShipImage.dispose();
         starImage.dispose();
         enemyShipImage.dispose();
