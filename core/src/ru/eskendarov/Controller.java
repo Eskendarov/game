@@ -21,7 +21,7 @@ public class Controller implements InputProcessor {
     Bullet bullet = new Bullet();
     private boolean right;
     private float animateTimer;
-    private float randomDirectionAndSpeed;
+    private boolean changeEnemyCraft;
 
     /*
      * Отрисовка объектов, основной метод render(), GameScreen класса.
@@ -45,15 +45,14 @@ public class Controller implements InputProcessor {
 
         enemyShipMotion();
 
-//        timer(Gdx.graphics.getDeltaTime());//todo
+        timer(Gdx.graphics.getDeltaTime());//todo
 
-        spriteBatch.draw(resources.getEnemyShipImage1(), enemyCraft.getPosition().x, enemyCraft.getPosition().y, enemyCraft.getSIZE(), enemyCraft.getSIZE());
+//        spriteBatch.draw(resources.getEnemyShipImage1(), enemyCraft.getPosition().x, enemyCraft.getPosition().y, enemyCraft.getSIZE(), enemyCraft.getSIZE());
         spriteBatch.draw(resources.getOwnShipImage(), ownCraft.getPosition().x, ownCraft.getPosition().y, ownCraft.getSIZE(), ownCraft.getSIZE());
         spriteBatch.end();
     }
 
     private void enemyShipMotion() {
-//        randomDirectionAndSpeed = (MathUtils.random(-250, 250) * Gdx.graphics.getDeltaTime()); //todo
         if (right) {
             enemyCraft.getPosition().x += 200 * Gdx.graphics.getDeltaTime();
             if (enemyCraft.getPosition().x >= ScreenOption.WIDTH - enemyCraft.getSIZE()) {
@@ -101,11 +100,19 @@ public class Controller implements InputProcessor {
     }
 
     private void timer(final float deltaTime) {
-        animateTimer += deltaTime;
-        if (animateTimer <= 10f) {
+        animateTimer -= deltaTime;
+        if (changeEnemyCraft) {
             spriteBatch.draw(resources.getEnemyShipImage1(), enemyCraft.getPosition().x, enemyCraft.getPosition().y, enemyCraft.getSIZE(), enemyCraft.getSIZE());
-        } else {
+            if (animateTimer <= 0) {
+                changeEnemyCraft = false;
+                animateTimer = 10;
+            }
+        } else if (!changeEnemyCraft) {
             spriteBatch.draw(resources.getEnemyShipImage2(), ScreenOption.WIDTH - enemyCraft.getSIZE() - enemyCraft.getPosition().x, enemyCraft.getPosition().y, enemyCraft.getSIZE(), enemyCraft.getSIZE());
+            if (animateTimer <= 0) {
+                changeEnemyCraft = true;
+                animateTimer = 10;
+            }
         }
     }
 
