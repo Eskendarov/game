@@ -2,11 +2,16 @@ package ru.eskendarov.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import ru.eskendarov.Game;
+import ru.eskendarov.StarWars;
 
 public class DesktopLauncher {
-	public static void main (String[] arg) {
-		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		new LwjglApplication(new Game(), config);
-	}
+
+    public static void main(final String[] arg) {
+        final LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+        config.title = "Star Wars";
+        config.width = 540;
+        config.height = 960;
+        new LwjglApplication(new StarWars(), config);
+    }
+
 }
