@@ -2,22 +2,31 @@ package ru.eskendarov;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import lombok.Getter;
+import ru.eskendarov.screen.MainMenuScreen;
+import ru.eskendarov.screen.PauseScreen;
 
+@Getter
 public class StarWars extends Game {
 
-    private Resources resources;
-    private Controller controller;
+    private BitmapFont font;
+    private SpriteBatch spriteBatch;
+
 
     /*
      * Метод вызывается один раз при создании приложения.
      * */
     @Override
     public void create() {
-        new Screen(false);
-        resources = new Resources();
-        resources.initSound();
-        controller = new Controller();
+        font = new BitmapFont();
+        font.setColor(0.9f,0.9f,0.9f,245f);
+        spriteBatch = new SpriteBatch();
+        this.setScreen(new MainMenuScreen(this));
+//        this.setScreen(new PauseScreen(this));
     }
 
     /*
@@ -29,7 +38,7 @@ public class StarWars extends Game {
     public void render() {
         Gdx.gl.glClearColor(0, 0, 0.2f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); // Очищает экран.
-        controller.film();
+        super.render();
     }
 
     /*
@@ -39,7 +48,6 @@ public class StarWars extends Game {
      * */
     @Override
     public void resize(int width, int height) {
-        //        super.resize(width, height);
     }
 
     /*
@@ -66,7 +74,9 @@ public class StarWars extends Game {
      * */
     @Override
     public void dispose() {
-        resources.dispose();
+        spriteBatch.dispose();
+        font.dispose();
+        super.dispose();
     }
 
 }

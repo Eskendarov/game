@@ -4,127 +4,120 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Rectangle;
 import lombok.Getter;
-import ru.eskendarov.ships.EnemyShip;
-import ru.eskendarov.ships.OwnShip;
-
-import static com.badlogic.gdx.Input.Keys.SPACE;
-
+import ru.eskendarov.arsenal.Bullet;
+import ru.eskendarov.screen.ScreenOption;
+import ru.eskendarov.ships.EnemyCraft;
+import ru.eskendarov.ships.OwnCraft;
 
 @Getter
-class Controller implements InputProcessor {
+public class Controller implements InputProcessor {
 
-    private final SpriteBatch spriteBatch = new SpriteBatch();
+    public static final SpriteBatch spriteBatch = new SpriteBatch();
     private final Resources resources = new Resources();
-    private final OwnShip ownShip = new OwnShip();
-    private final EnemyShip enemyShip = new EnemyShip();
+    private final OwnCraft ownCraft = new OwnCraft();
+    private final EnemyCraft enemyCraft = new EnemyCraft();
     private final Stars stars = new Stars();
+    Bullet bullet = new Bullet();
     private boolean right;
-    private int currentSizeShip;
+    private float animateTimer;
+    private float randomDirectionAndSpeed;
 
-    Controller() {
-        System.out.println("controller create");
-        ownShip.initPosition();
-        enemyShip.initPosition();
-    }
-
-    void film() {
-        Screen.camera.update();
-        spriteBatch.setProjectionMatrix(Screen.camera.combined);
-//        spriteBatch.getProjectionMatrix().idt();
-//        Gdx.input.setInputProcessor(this);
+    /*
+     * Отрисовка объектов, основной метод render(), GameScreen класса.
+     * */
+    public void film() {
+        ScreenOption.camera.update();
+        spriteBatch.setProjectionMatrix(ScreenOption.camera.combined);
+        Gdx.input.setInputProcessor(this);
         spriteBatch.begin();
-        spriteBatch.draw(resources.getBackgroundImage(), 0, 0, Screen.WIDTH, Screen.HEIGHT);
-        spriteBatch.end();
+        spriteBatch.draw(resources.getBackgroundImage(), 0, 0, ScreenOption.WIDTH, ScreenOption.HEIGHT);
         touchController();
         keyController();
-        stars.iterate();
-        if (ownShip.getRectangle().overlaps(enemyShip.getRectangle())) { // Столкновение //todo overlaps
-            System.out.println("OverLaps");
-        }
-        spriteBatch.begin();
-        for (final Rectangle starsRec : stars.getStars()) {
-            if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-                starsRec.x += 20 * Gdx.graphics.getDeltaTime();
-                if (starsRec.x >= Screen.WIDTH) {
-                    starsRec.x = 0;
-                }
-            } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-                starsRec.x -= 20 * Gdx.graphics.getDeltaTime();
-                if (starsRec.x <= 0) {
-                    starsRec.x = Screen.WIDTH;
-                }
-            }
-            spriteBatch.draw(resources.getStarImage(), starsRec.x, starsRec.y, stars.getSize(), stars.getSize());
-        }
+        stars.generate(resources);
+
+        ownCraft.setBounds();
+        enemyCraft.setBounds();
+//        if (ownCraft.getPosition().overlaps(enemyCraft.getPosition())) { // Столкновение //todo overlaps
+//            System.out.println("OverLaps method");
+//        }
+
+
+        enemyShipMotion();
+
+//        timer(Gdx.graphics.getDeltaTime());//todo
+
+        spriteBatch.draw(resources.getEnemyShipImage1(), enemyCraft.getPosition().x, enemyCraft.getPosition().y, enemyCraft.getSIZE(), enemyCraft.getSIZE());
+        spriteBatch.draw(resources.getOwnShipImage(), ownCraft.getPosition().x, ownCraft.getPosition().y, ownCraft.getSIZE(), ownCraft.getSIZE());
+        spriteBatch.end();
+    }
+
+    private void enemyShipMotion() {
+//        randomDirectionAndSpeed = (MathUtils.random(-250, 250) * Gdx.graphics.getDeltaTime()); //todo
         if (right) {
-            enemyShip.getRectangle().x += 50 * Gdx.graphics.getDeltaTime();
-            if (enemyShip.getRectangle().x >= Screen.WIDTH - enemyShip.getSIZE()) {
+            enemyCraft.getPosition().x += 200 * Gdx.graphics.getDeltaTime();
+            if (enemyCraft.getPosition().x >= ScreenOption.WIDTH - enemyCraft.getSIZE()) {
                 right = false;
             }
         }
         if (!right) {
-            enemyShip.getRectangle().x -= 50 * Gdx.graphics.getDeltaTime();
-            if (enemyShip.getRectangle().x <= 0) {
+            enemyCraft.getPosition().x -= 200 * Gdx.graphics.getDeltaTime();
+            if (enemyCraft.getPosition().x <= enemyCraft.getLeftBounds()) {
                 right = true;
             }
         }
-        spriteBatch.draw(resources.getEnemyShipImage(), enemyShip.getRectangle().x, enemyShip.getRectangle().y, enemyShip.getSIZE(), enemyShip.getSIZE());
-        spriteBatch.draw(resources.getOwnShipImage(), ownShip.getRectangle().x, ownShip.getRectangle().y, currentSizeShip, currentSizeShip);
-        spriteBatch.end();
     }
 
     private void touchController() {
         if (Gdx.input.isTouched()) {
-            if (Gdx.input.getX() < Screen.HALF_WIDTH) {
-                ownShip.getRectangle().x -= 500 * Gdx.graphics.getDeltaTime();
+            if (Gdx.input.getX() < ScreenOption.HALF_WIDTH) {
+                ownCraft.getPosition().x -= 200 * Gdx.graphics.getDeltaTime();
+                if (ownCraft.getPosition().x <= Gdx.input.getX() - ownCraft.getHALF_SIZE()) {
+                    ownCraft.getPosition().x = Gdx.input.getX() - ownCraft.getHALF_SIZE();
+                }
             }
-            if (Gdx.input.getX() > Screen.HALF_WIDTH) {
-                ownShip.getRectangle().x += 500 * Gdx.graphics.getDeltaTime();
+            if (Gdx.input.getX() > ScreenOption.HALF_WIDTH) {
+                ownCraft.getPosition().x += 200 * Gdx.graphics.getDeltaTime();
+                if (ownCraft.getPosition().x >= Gdx.input.getX() - ownCraft.getHALF_SIZE()) {
+                    ownCraft.getPosition().x = Gdx.input.getX() - ownCraft.getHALF_SIZE();
+                }
             }
-            Screen.camera.unproject(Screen.touchPosition);
-            resources.getBlasterSound().play(0.03f);
         }
     }
 
     private void keyController() {
-
-        if (Gdx.input.isKeyPressed(SPACE)) {
-            resources.getBlasterSound().play(.03f);
-        }
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            ownShip.getRectangle().y = ownShip.getRectangle().y + 5;
-            currentSizeShip = ownShip.getSIZE() - 2;
-        } else {
-            currentSizeShip = ownShip.getSIZE();
+            ownCraft.getPosition().y = ownCraft.getPosition().y + 5;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            ownShip.getRectangle().y = ownShip.getRectangle().y - 5;
-            currentSizeShip = ownShip.getSIZE() + 2;
+            ownCraft.getPosition().y = ownCraft.getPosition().y - 5;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            ownShip.getRectangle().x -= 500 * Gdx.graphics.getDeltaTime();
+            ownCraft.getPosition().x -= 500 * Gdx.graphics.getDeltaTime();
         }
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            ownShip.getRectangle().x += 500 * Gdx.graphics.getDeltaTime();
-        }
-        if (ownShip.getRectangle().x < -ownShip.getHALF_SIZE()) {
-            ownShip.getRectangle().x = -ownShip.getHALF_SIZE();
-        }
-        if (ownShip.getRectangle().x > Screen.WIDTH - ownShip.getHALF_SIZE()) {
-            ownShip.getRectangle().x = Screen.WIDTH - ownShip.getHALF_SIZE();
-        }
-        if (ownShip.getRectangle().y < ownShip.getHALF_SIZE() / 3) {
-            ownShip.getRectangle().y = (float) ownShip.getHALF_SIZE() / 3;
-        }
-        if (ownShip.getRectangle().y >= enemyShip.getRectangle().y - ownShip.getSIZE()) {
-            ownShip.getRectangle().y = enemyShip.getRectangle().y - ownShip.getSIZE();
+            ownCraft.getPosition().x += 500 * Gdx.graphics.getDeltaTime();
         }
     }
 
+    private void timer(final float deltaTime) {
+        animateTimer += deltaTime;
+        if (animateTimer <= 10f) {
+            spriteBatch.draw(resources.getEnemyShipImage1(), enemyCraft.getPosition().x, enemyCraft.getPosition().y, enemyCraft.getSIZE(), enemyCraft.getSIZE());
+        } else {
+            spriteBatch.draw(resources.getEnemyShipImage2(), ScreenOption.WIDTH - enemyCraft.getSIZE() - enemyCraft.getPosition().x, enemyCraft.getPosition().y, enemyCraft.getSIZE(), enemyCraft.getSIZE());
+        }
+    }
+
+
     @Override
     public boolean keyDown(int keycode) {
+        if (keycode == Input.Keys.SPACE) {
+            resources.getBlasterSound().play(0.03f);
+            spriteBatch.begin();
+            bullet.fire(resources);
+            spriteBatch.end();
+        }
         return false;
     }
 
@@ -140,16 +133,20 @@ class Controller implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        resources.getBlasterSound().play(0.03f);
+        System.out.println(String.format("touchDown screenX = %s  screenY = %s", Gdx.input.getX(), Gdx.input.getY()));
         return false;
     }
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        System.out.println(String.format("touchUp screenX = %s  screenY = %s", Gdx.input.getX(), Gdx.input.getY()));
         return false;
     }
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
+        System.out.println(String.format("touchDragged screenX = %s  screenY = %s", Gdx.input.getX(), Gdx.input.getY()));
         return false;
     }
 

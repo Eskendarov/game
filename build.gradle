@@ -10,6 +10,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.2.1'
+
     }
 
 }
@@ -50,6 +51,7 @@ project(":desktop") {
         implementation project(":core")
         implementation "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
         implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+
     }
 }
 
@@ -76,7 +78,8 @@ project(":core") {
 
     dependencies {
         implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
-        implementation "org.projectlombok:lombok:1.18.4"
+        implementation 'org.projectlombok:lombok:1.18.4'
+        annotationProcessor 'org.projectlombok:lombok:1.18.4'
     }
 }
 
